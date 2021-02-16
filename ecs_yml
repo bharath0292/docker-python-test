@@ -1,0 +1,28 @@
+buildjob:
+  stage: build
+  tags:
+    - dockerpython-helloword
+  script:
+    - docker login -u "bharath0292" -p "Duoschat@123"
+    - docker build -t bharath0292/dockerpython:latest .
+    - docker image push bharath0292/dockerpython:latest
+    - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+    - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+    - aws configure set region $AWS_DEFAULT_REGION
+    - aws ecs update-service --cluster dockerpythoncluster --service dockerpython-service --region us-east-2 --force-new-deployment
+
+
+  - git remote add heroku https://heroku:$HEROKU_API_KEY@git.heroku.com/fastapi-test-helloworld.git
+
+
+  buildjob:
+  stage: build
+  tags:
+    - fastapi-heloworld
+  script:
+    - docker login -u "bharath0292" -p "Duoschat@123"
+    - docker build -t bharath0292/dockerpython:latest .
+    - docker image push bharath0292/dockerpython:latest
+    - git push --set-upstream git@gitlab.com:<bharath0292>/dockerpython.git master
+    - git remote add origin git@gitlab.com:<bharath0292>/dockerpython.git
+    - echo "Deployed to Production Server https://fastapi-test-helloworld.herokuapp.com"
